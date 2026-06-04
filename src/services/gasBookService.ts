@@ -43,7 +43,7 @@ const mapBackendGasBook = (item: any): GasBook => {
 
 export const getGasBooks = async (params: GetGasBooksParams = {}) => {
   const query = new URLSearchParams();
-  if (params.keyword) query.append('fullName', params.keyword);
+  if (params.keyword) query.append('keyword', params.keyword);
   if (params.page) query.append('page', String(params.page));
   if (params.pageSize) query.append('limit', String(params.pageSize));
   if (params.customerGroup) query.append('customerGroup', params.customerGroup);

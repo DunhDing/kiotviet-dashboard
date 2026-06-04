@@ -59,6 +59,7 @@ export default function DebtDetailModal({
       }
       return [...prev, { 
         id: Date.now(), 
+        productId: product.id,
         productCode: product.code, 
         productName: product.name, 
         quantity: 1, 
@@ -80,7 +81,19 @@ export default function DebtDetailModal({
 
   const handleSave = async () => {
     if (!customer) {
-      showToast('Thao tác không thành công', 'error');
+      showToast('Vui lòng chọn khách hàng', 'error');
+      return;
+    }
+    if (!debtDate) {
+      showToast('Vui lòng chọn ngày nợ', 'error');
+      return;
+    }
+    if (!dueDate) {
+      showToast('Vui lòng chọn ngày hẹn nợ', 'error');
+      return;
+    }
+    if (items.length === 0) {
+      showToast('Vui lòng chọn ít nhất một hàng hóa nợ', 'error');
       return;
     }
 

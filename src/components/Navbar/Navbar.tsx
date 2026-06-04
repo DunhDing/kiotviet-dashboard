@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -45,8 +45,6 @@ const NAV_ITEMS = [
       { name: 'Nhà cung cấp', path: '/nha-cung-cap' },
     ],
   },
-  { name: 'Sổ quỹ', path: '/so-quy', children: [] },
-
   { name: 'Nhân viên', path: '/nhan-vien', children: [] },
 
   {
@@ -65,6 +63,18 @@ const NAV_ITEMS = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [roleName, setRoleName] = useState<string>('');
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(atob(payloadBase64));
+        setRoleName(payload.role || '');
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   const isItemActive = (item: typeof NAV_ITEMS[0]) => {
     if (item.path !== '#' && pathname === item.path) {
@@ -82,6 +92,17 @@ export default function Navbar() {
         {NAV_ITEMS.map((item, idx) => {
           const isActive = isItemActive(item);
           const hasChildren = item.children.length > 0;
+          const normalizedRole = roleName ? roleName.toLowerCase() : '';
+          const isEmployee = normalizedRole.includes('nhân viên') || normalizedRole.includes('nhan vien') || normalizedRole.includes('nhan_vien');
+          const isDisabled = (item.name === 'Tổng quan' || item.name === 'Báo cáo') && isEmployee;
+
+          if (isDisabled) {
+            return (
+              <div key={idx} className={clsx(styles.navItem, styles.disabled)} title="Chức năng này không dành cho Nhân viên">
+                <span className={styles.navLabel}>{item.name}</span>
+              </div>
+            );
+          }
 
           if (hasChildren) {
             return (

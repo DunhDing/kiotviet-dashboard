@@ -127,3 +127,9 @@
 .sellButton:hover {
   background-color: #f0f7ff;
 }
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
