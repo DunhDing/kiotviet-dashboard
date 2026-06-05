@@ -48,10 +48,8 @@ export default function ProductListPage() {
   const [selectedBranch, setSelectedBranch] = useState('all');
   const [selectedPriceBook, setSelectedPriceBook] = useState('all');
   const [selectedAttributeGroup, setSelectedAttributeGroup] = useState('all');
-  const [attributeKeyword, setAttributeKeyword] = useState('');
   const [keyword, setKeyword] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [attributeSearchInput, setAttributeSearchInput] = useState('');
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -69,7 +67,6 @@ export default function ProductListPage() {
   });
 
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const attrSearchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   const loadFilterData = useCallback(async () => {
@@ -123,7 +120,6 @@ export default function ProductListPage() {
         stock: selectedBranch,
         priceList: selectedPriceBook,
         productAttribute: selectedAttributeGroup,
-        attributeValue: attributeKeyword,
         page,
         pageSize: PAGE_SIZE,
       };
@@ -135,7 +131,7 @@ export default function ProductListPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [keyword, selectedCategory, selectedBranch, selectedPriceBook, selectedAttributeGroup, attributeKeyword, page]);
+  }, [keyword, selectedCategory, selectedBranch, selectedPriceBook, selectedAttributeGroup, page]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -158,14 +154,6 @@ export default function ProductListPage() {
   const handleBranchChange = (branch: string) => { setSelectedBranch(branch); setPage(1); };
   const handlePriceBookChange = (pb: string) => { setSelectedPriceBook(pb); setPage(1); };
   const handleAttributeGroupChange = (ag: string) => { setSelectedAttributeGroup(ag); setPage(1); };
-  const handleAttributeKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAttributeSearchInput(e.target.value);
-    if (attrSearchTimeout.current) clearTimeout(attrSearchTimeout.current);
-    attrSearchTimeout.current = setTimeout(() => {
-      setPage(1);
-      setAttributeKeyword(e.target.value);
-    }, 400);
-  };
 
   const handleSaveProduct = async (updatedProduct: Product) => {
     try {
@@ -427,15 +415,7 @@ export default function ProductListPage() {
                 <option key={item.id} value={item.name}>{item.name}</option>
               ))}
             </select>
-            <div className={styles.sideSearchBox}>
-              <Search size={14} className={styles.sideSearchIcon} />
-              <input
-                className={styles.sideSearchInput}
-                placeholder="Giá trị"
-                value={attributeSearchInput}
-                onChange={handleAttributeKeywordChange}
-              />
-            </div>
+
             <ul className={styles.sideList}>
               {attributes.map((item) => (
                 <li key={item.id} className={styles.sideListItem}>

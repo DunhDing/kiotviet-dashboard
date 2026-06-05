@@ -18,25 +18,6 @@ interface ProductDetailModalProps {
   attributes?: FilterItem[];
 }
 
-interface StockCard {
-  id: string;
-  code: string;
-  date: string;
-  partner: string;
-  quantityChange: number;
-  finalStock: number;
-}
-
-const MOCK_STOCK_CARDS: StockCard[] = Array.from({ length: 45 }).map((_, i) => ({
-  id: `sc_${i}`,
-  code: i % 3 === 0 ? `PN00${3204 + i}` : `HD04${8018 + i}`,
-  date: new Date(Date.now() - i * 86400000).toLocaleString('vi-VN', {
-    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  }),
-  partner: i % 3 === 0 ? 'Thúy Đạo' : (i % 2 === 0 ? 'Khách lẻ' : 'CHỊ HẰNG'),
-  quantityChange: i % 3 === 0 ? 10 : -1,
-  finalStock: 100 - i * 2,
-}));
 
 export default function ProductDetailModal({
   product,
@@ -49,16 +30,6 @@ export default function ProductDetailModal({
   attributes = [],
 }: ProductDetailModalProps) {
   const { showToast, showConfirm } = useToastConfirm();
-  const [activeTab, setActiveTab] = useState<'info' | 'stock'>('info');
-  const [stockPage, setStockPage] = useState(1);
-  const STOCK_PAGE_SIZE = 15;
-
-  const totalStockPages = Math.ceil(MOCK_STOCK_CARDS.length / STOCK_PAGE_SIZE);
-  const currentStockCards = MOCK_STOCK_CARDS.slice(
-    (stockPage - 1) * STOCK_PAGE_SIZE,
-    stockPage * STOCK_PAGE_SIZE
-  );
-
   // Dynamic lists from props or fallback to defaults
   const categoryOptions = categories.length > 0
     ? categories.map(c => c.name).filter(name => name !== 'Tất cả')
@@ -266,25 +237,8 @@ export default function ProductDetailModal({
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className={styles.tabsContainer}>
-          <button
-            className={`${styles.tab} ${activeTab === 'info' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('info')}
-          >
-            Thông tin
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'stock' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('stock')}
-          >
-            Thẻ kho
-          </button>
-        </div>
-
         {/* Body */}
         <div className={styles.body}>
-          {activeTab === 'info' ? (
             <div className={styles.infoGrid}>
               {/* Left Column */}
               <div className={styles.leftCol}>
@@ -497,56 +451,6 @@ export default function ProductDetailModal({
                 </div>
               </div>
             </div>
-          ) : (
-            <div className={styles.stockCardContainer}>
-              <table className={styles.stockTable}>
-                <thead>
-                  <tr className={styles.stockThead}>
-                    <th style={{ width: '120px' }}>Mã chứng từ</th>
-                    <th style={{ width: '180px' }}>Thời gian</th>
-                    <th style={{ width: '180px' }}>Đối tác</th>
-                    <th className={styles.numAlign}>Số lượng thay đổi</th>
-                    <th className={styles.numAlign}>Tồn cuối</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentStockCards.map((card) => (
-                    <tr key={card.id} className={styles.stockTr}>
-                      <td className={styles.stockTdCode}>{card.code}</td>
-                      <td>{card.date}</td>
-                      <td>{card.partner}</td>
-                      <td className={`${styles.numAlign} ${card.quantityChange < 0 ? styles.negative : styles.positive}`}>
-                        {card.quantityChange > 0 ? `+${card.quantityChange}` : card.quantityChange}
-                      </td>
-                      <td className={styles.numAlign}>{card.finalStock}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {totalStockPages > 1 && (
-                <div className={styles.stockPagination}>
-                  <button
-                    className={styles.stockPageBtn}
-                    disabled={stockPage === 1}
-                    onClick={() => setStockPage((p) => p - 1)}
-                  >
-                    Trước
-                  </button>
-                  <span className={styles.stockPageIndicator}>
-                    Trang {stockPage} / {totalStockPages}
-                  </span>
-                  <button
-                    className={styles.stockPageBtn}
-                    disabled={stockPage === totalStockPages}
-                    onClick={() => setStockPage((p) => p + 1)}
-                  >
-                    Sau
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Footer */}

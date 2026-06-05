@@ -36,7 +36,7 @@ const realGetSummaryData = async () => {
     let gasVolume = 0;
 
     orders.forEach(order => {
-      revenue += order.totalAmount || 0;
+      revenue += order.finalAmount || 0;
       receipts += order.paidAmount || 0;
     });
 
@@ -134,7 +134,7 @@ const realGetChartData = async (startDate?: string, endDate?: string) => {
         const monthStr = String(dateObj.getMonth() + 1).padStart(2, '0');
         const key = `${dayStr}/${monthStr}`;
         if (dataMap[key] !== undefined) {
-          dataMap[key] += (order.totalAmount || 0);
+          dataMap[key] += (order.finalAmount || 0);
         }
       }
     });
@@ -201,10 +201,14 @@ const realGetTopProducts = async (startDate?: string, endDate?: string) => {
     const productMap: Record<string, number> = {};
     
     orders.forEach(order => {
+      const orderTotal = order.totalAmount || 0;
+      const orderFinal = order.finalAmount || 0;
+      const ratio = orderTotal > 0 ? (orderFinal / orderTotal) : 1;
+
       if (order.details) {
         order.details.forEach(detail => {
           const name = detail.name || 'Sản phẩm khác';
-          const total = detail.total || 0;
+          const total = (detail.total || 0) * ratio;
           if (!productMap[name]) productMap[name] = 0;
           productMap[name] += total;
         });
@@ -281,7 +285,7 @@ const realGetTopCustomers = async (startDate?: string, endDate?: string) => {
     
     orders.forEach(order => {
       const name = order.customerName || 'Khách lẻ';
-      const total = order.totalAmount || 0;
+      const total = order.finalAmount || 0;
       if (!customerMap[name]) customerMap[name] = 0;
       customerMap[name] += total;
     });
