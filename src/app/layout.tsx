@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ToastConfirmProvider } from "@/components/ToastConfirm/ToastConfirmContext";
+import ChatbotUI from "@/components/ChatbotUI/ChatbotUI";
 
 export const metadata: Metadata = {
   title: "Gas Tuấn Đạt - Đăng nhập",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         <ToastConfirmProvider>
           {children}
+          <ChatbotUI />
         </ToastConfirmProvider>
       </body>
     </html>
